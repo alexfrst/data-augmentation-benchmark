@@ -1,0 +1,1 @@
+zipfile_url = "https://storage.googleapis.com/object_detection_storage/dataset.zip"
