@@ -1,6 +1,7 @@
 import os
 import sys
 import zipfile
+import config
 
 import numpy as np
 import torch
@@ -8,10 +9,8 @@ import wget
 from sklearn.model_selection import train_test_split
 from torchvision import datasets, transforms
 
-
 sys.path.append('.')
 from utils.print_utils import Symbols
-import credentials
 
 
 # Load or download zipfile
@@ -22,7 +21,7 @@ def load_zipfile():
         print(f'Dataset already downloaded {Symbols.OK}')
     else:
         print(f'{unzip_dir} does not exist, downloading...')
-        wget.download(credentials.zipfile_url, zipfile_name)
+        wget.download(config.zipfile_url, zipfile_name)
         print(f'Download complete {Symbols.OK}')
         print(f'Unzipping {zipfile_name}...')
         with zipfile.ZipFile(zipfile_name, 'r') as zip_ref:
@@ -43,6 +42,7 @@ def check_labels_corectness(dataset):
     assert len(np.unique(labels)) == nb_classes, f"Labels must be in range(0, nb_classes) {Symbols.FAIL}"
 
     return nb_classes
+
 
 def load_dataset(additional_transforms=()):
     print("Loading dataset...")
