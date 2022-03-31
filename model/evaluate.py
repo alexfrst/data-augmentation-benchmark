@@ -9,9 +9,9 @@ def evaluate(model, dataset, device, criterion):
 
         loss = criterion(outputs, labels)
         _, preds = torch.max(outputs, 1)
-        n_correct = torch.sum(preds == labels)
+        batch_acc = torch.sum(preds == labels)/len(preds)
 
         avg_loss += loss.item()
-        avg_accuracy += n_correct
+        avg_accuracy += batch_acc
 
     return avg_loss / len(dataset), float(avg_accuracy) / len(dataset)
