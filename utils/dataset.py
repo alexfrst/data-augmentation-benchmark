@@ -44,14 +44,11 @@ def check_labels_corectness(dataset):
     return nb_classes
 
 
-def load_dataset(additional_transforms=()):
+def load_dataset(train_image_directory,test_image_directory, additional_transforms=(),batch_size=16):
     print("Loading dataset...")
 
     mean = np.array([0.485, 0.456, 0.406])
     std = np.array([0.229, 0.224, 0.225])
-
-    train_image_directory = "dataset/dataset-train"
-    test_image_directory = "dataset/dataset-test"
 
     train_transforms = transforms.Compose([
         transforms.Resize([299, 299]),
@@ -89,9 +86,9 @@ def load_dataset(additional_transforms=()):
     nb_classes_val = check_labels_corectness(samples_val)
     nb_classes_test = check_labels_corectness(dataset_test)
 
-    loader_train = torch.utils.data.DataLoader(dataset_train, batch_size=16, shuffle=True, num_workers=4)
-    loader_val = torch.utils.data.DataLoader(dataset_val, batch_size=16, shuffle=True, num_workers=4)
-    loader_test = torch.utils.data.DataLoader(dataset_test, batch_size=16, shuffle=True, num_workers=4)
+    loader_train = torch.utils.data.DataLoader(dataset_train, batch_size=batch_size, shuffle=True, num_workers=4)
+    loader_val = torch.utils.data.DataLoader(dataset_val, batch_size=batch_size, shuffle=True, num_workers=4)
+    loader_test = torch.utils.data.DataLoader(dataset_test, batch_size=batch_size, shuffle=True, num_workers=4)
 
     assert nb_classes_train == nb_classes_val == nb_classes_test, f"Number of classes in train test and val must be the same {Symbols.FAIL}"
 
