@@ -127,4 +127,5 @@ dmypy.json
 
 # Files
 /dataset
-/*/**/dataset
+/notebooks/datasets/dataset-test/
+/notebooks/datasets/dataset/
