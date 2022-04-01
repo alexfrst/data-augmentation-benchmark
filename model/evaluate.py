@@ -5,7 +5,7 @@ def evaluate(model, dataset, device, criterion):
     for data in dataset:
         inputs, labels = data
         inputs, labels = inputs.to(device), labels.to(device)
-        outputs, _ = model(inputs)
+        outputs = model(inputs)
 
         loss = criterion(outputs, labels)
         _, preds = torch.max(outputs, 1)
