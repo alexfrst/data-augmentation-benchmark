@@ -9,7 +9,8 @@ def train_model(model, loader_train, data_val, optimizer, criterion, evaluate, n
             for i, (inputs, labels) in pbar:
                 inputs, labels = inputs.to(device), labels.to(device)  # on passe les données sur CPU / GPU
                 optimizer.zero_grad()  # on réinitialise les gradients
-                if model == "Inception3":
+
+                if model._get_name() == "Inception3":
                     outputs, aux_outputs = model(inputs)  # on calcule l'output
                     loss1 = criterion(outputs, labels)
                     loss2 = criterion(aux_outputs, labels)

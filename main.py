@@ -19,7 +19,13 @@ if __name__ == '__main__':
     train_loader, val_loader, test_loader, nb_classes = load_dataset("dataset/dataset-train", "dataset/dataset-test")
     inception_v3 = load_inception_for_tl(nb_classes, device)
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.SGD(inception_v3.AuxLogits.fc.parameters(), lr=0.001, momentum=0.9)
+
+    params_to_update = []
+    for name,param in inception_v3.named_parameters():
+        if param.requires_grad == True:
+            params_to_update.append(param)
+
+    optimizer = optim.SGD(params_to_update, lr=0.001, momentum=0.9)
 
     print("Apprentissage en transfer learning")
     inception_v3.to(device)
