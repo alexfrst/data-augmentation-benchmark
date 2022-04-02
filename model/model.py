@@ -42,6 +42,7 @@ def get_params_tranfer_learning(model):
     for name, param in model.named_parameters():
         if param.requires_grad == True:
             params_to_update.append(param)
+    return params_to_update
 
 
 if __name__ == '__main__':
