@@ -3,7 +3,7 @@ from tqdm import tqdm
 import copy
 
 
-def train_model(model, loader_train, data_val, optimizer: ReduceLROnPlateau, criterion, evaluate, n_epochs=10, device='cpu', tb_writer=None,training_name='train'):
+def train_model(model, loader_train, data_val, optimizer, scheduler, criterion, evaluate, n_epochs=10, device='cpu', tb_writer=None,training_name='train'):
     best_val_score = 0
     best_model = copy.deepcopy(model.state_dict())
     model.train(True)
@@ -36,6 +36,7 @@ def train_model(model, loader_train, data_val, optimizer: ReduceLROnPlateau, cri
 
                 loss.backward()  # on effectue la backprop pour calculer les gradients
                 optimizer.step()
+        scheduler.step()
 
     if tb_writer is not None:
         tb_writer.flush()
