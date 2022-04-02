@@ -44,7 +44,7 @@ def check_labels_corectness(dataset):
     return nb_classes
 
 
-def load_dataset(train_image_directory,test_image_directory, additional_transforms=(),batch_size=16):
+def load_dataset(train_image_directory, additional_transforms=(),batch_size=16):
     print("Loading dataset...")
 
     mean = np.array([0.485, 0.456, 0.406])
@@ -64,14 +64,14 @@ def load_dataset(train_image_directory,test_image_directory, additional_transfor
 
     np.random.seed(42)
 
-    dataset_train_val = datasets.ImageFolder(train_image_directory, train_transforms)
-    dataset_test = datasets.ImageFolder(test_image_directory, test_transforms)
+    dataset = datasets.ImageFolder(train_image_directory, transform=train_transforms)
 
-    samples_train, samples_val = train_test_split(dataset_train_val.samples, test_size=0.1)
+    train, sample_test = train_test_split(dataset.samples, test_size=0.2, stratify=dataset.targets)
+    samples_train, samples_val = train_test_split(train, test_size=0.1)
 
     print("Nombre d'images de train : %i" % len(samples_train))
     print("Nombre d'images de val : %i" % len(samples_val))
-    print("Nombre d'images de test : %i" % len(dataset_test))
+    print("Nombre d'images de test : %i" % len(sample_test))
 
     # on définit les datasets et loaders pytorch à partir des listes d'images de train / val / test
     dataset_train = datasets.ImageFolder(train_image_directory, train_transforms)
@@ -81,6 +81,10 @@ def load_dataset(train_image_directory,test_image_directory, additional_transfor
     dataset_val = datasets.ImageFolder(train_image_directory, train_transforms)
     dataset_val.samples = samples_val
     dataset_val.imgs = samples_val
+
+    dataset_test = datasets.ImageFolder(train_image_directory, train_transforms)
+    dataset_test.samples = sample_test
+    dataset_test.imgs = sample_test
 
     nb_classes_train = check_labels_corectness(samples_train)
     nb_classes_val = check_labels_corectness(samples_val)
