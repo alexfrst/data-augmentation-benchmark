@@ -3,7 +3,7 @@ from tqdm import tqdm
 import copy
 
 
-def train_model(model, loader_train, data_val, optimizer: ReduceLROnPlateau, criterion, evaluate, n_epochs=10, device='cpu', tb_writer=None):
+def train_model(model, loader_train, data_val, optimizer: ReduceLROnPlateau, criterion, evaluate, n_epochs=10, device='cpu', tb_writer=None,training_name='train'):
     best_val_score = 0
     best_model = copy.deepcopy(model.state_dict())
     model.train(True)
@@ -29,10 +29,10 @@ def train_model(model, loader_train, data_val, optimizer: ReduceLROnPlateau, cri
                     best_val_score = accuracy
                     best_model = copy.deepcopy(model.state_dict())
                 if tb_writer is not None:
-                    tb_writer.add_scalar('Loss/train', loss.item(), epoch)
-                    tb_writer.add_scalar('Loss/val', loss_val, epoch)
-                    tb_writer.add_scalar('Accuracy/val', accuracy, epoch)
-                    tb_writer.add_scalar('Learning rate', optimizer.param_groups[0]['lr'], epoch)
+                    tb_writer.add_scalar(f'{training_name}_Loss/train', loss.item(), epoch)
+                    tb_writer.add_scalar(f'{training_name}_Loss/val', loss_val, epoch)
+                    tb_writer.add_scalar(f'{training_name}_Accuracy/val', accuracy, epoch)
+                    tb_writer.add_scalar(f'{training_name}_LR', optimizer.param_groups[0]['lr'], epoch)
 
                 loss.backward()  # on effectue la backprop pour calculer les gradients
                 optimizer.step()
