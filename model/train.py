@@ -1,8 +1,10 @@
 from tqdm import tqdm
+import copy
 
 
-def train_model(model, loader_train, data_val, optimizer, criterion, evaluate, n_epochs=10, device='cpu',
-                notebook=False):
+def train_model(model, loader_train, data_val, optimizer, criterion, evaluate, n_epochs=10, device='cpu',notebook=False):
+    best_val_score = 0
+    best_model = copy.deepcopy(model.state_dict())
     model.train(True)
     for epoch in range(n_epochs):  # à chaque epochs
         with tqdm(enumerate(loader_train), desc=f"Epoch {epoch}") as pbar:
@@ -22,6 +24,10 @@ def train_model(model, loader_train, data_val, optimizer, criterion, evaluate, n
                 loss_val, accuracy = evaluate(model, data_val, device, criterion)
                 model.train(True)
                 pbar.set_postfix(**{"loss train": loss.item(), "loss val": loss_val, "Acc (val)": accuracy})
+                if accuracy > best_val_score:
+                    best_val_score = accuracy
+                    best_model = copy.deepcopy(model.state_dict())
 
                 loss.backward()  # on effectue la backprop pour calculer les gradients
                 optimizer.step()
+    return best_model, best_val_score
