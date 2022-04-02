@@ -1,7 +1,6 @@
 import os
 import sys
 import zipfile
-import config
 
 import numpy as np
 import torch
@@ -10,6 +9,7 @@ from sklearn.model_selection import train_test_split
 from torchvision import datasets, transforms
 
 sys.path.append('.')
+import config
 from utils.print_utils import Symbols
 
 
@@ -62,12 +62,10 @@ def load_dataset(train_image_directory, additional_transforms=(),batch_size=16):
         transforms.Normalize(mean=mean, std=std)
     ])
 
-    np.random.seed(42)
-
     dataset = datasets.ImageFolder(train_image_directory, transform=train_transforms)
 
     train, sample_test = train_test_split(dataset.samples, test_size=0.2, stratify=dataset.targets)
-    samples_train, samples_val = train_test_split(train, test_size=0.1)
+    samples_train, samples_val = train_test_split(train, test_size=0.1, stratify=[element[1] for element in train])
 
     print("Nombre d'images de train : %i" % len(samples_train))
     print("Nombre d'images de val : %i" % len(samples_val))
@@ -104,4 +102,4 @@ def load_dataset(train_image_directory, additional_transforms=(),batch_size=16):
 
 if __name__ == '__main__':
     load_zipfile()
-    load_dataset()
+    load_dataset("dataset/dataset-train")
