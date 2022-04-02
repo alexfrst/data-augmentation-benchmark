@@ -39,4 +39,4 @@ def train_model(model, loader_train, data_val, optimizer: ReduceLROnPlateau, cri
 
     if tb_writer is not None:
         tb_writer.flush()
-    return best_model, best_val_score
+    return model.load_state_dict(best_model), best_val_score
