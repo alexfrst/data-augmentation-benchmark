@@ -2,7 +2,7 @@ import torch.nn as nn
 from torchvision import models
 
 
-def load_inception_for_tl(nb_classes):
+def load_inception(nb_classes):
     inception_v3 = models.inception_v3(pretrained=True)
 
     # on indique qu'il est inutile de calculer les gradients des paramètres du réseau
@@ -19,7 +19,7 @@ def load_inception_for_tl(nb_classes):
 
     return inception_v3
 
-def load_mobile_for_tl(nb_classes):
+def load_mobilenet(nb_classes):
     mobile_net = models.mobilenet_v2(pretrained=True)
 
     # on indique qu'il est inutile de calculer les gradients des paramètres du réseau
@@ -32,6 +32,12 @@ def load_mobile_for_tl(nb_classes):
 
     return mobile_net
 
+def get_params_tranfer_learning(model):
+    params_to_update = []
+    for name,param in model.named_parameters():
+        if param.requires_grad == True:
+            params_to_update.append(param)
+
 if __name__ == '__main__':
-    inception_v3 = load_inception_for_tl(nb_classes=2)
+    inception_v3 = load_inception(nb_classes=2)
     print(inception_v3._get_name())
