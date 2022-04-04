@@ -35,6 +35,7 @@ def train_model(model, loader_train, data_val, optimizer, scheduler, criterion, 
         scheduler.step()
         model.train(False)
         loss_val, accuracy = evaluate(model, data_val, device, criterion)
+        pbar.set_postfix(**{"loss train": loss.item(), "loss val": loss_val, "Acc (val)": accuracy})
         model.train(True)
         if accuracy > best_val_score:
             best_val_score = accuracy
