@@ -7,6 +7,7 @@ import torch
 def train_model(model, loader_train, data_val, optimizer, scheduler, criterion, evaluate, n_epochs=10, device='cpu', tb_writer=None,training_name='train'):
     best_val_score = 0
     best_params = copy.deepcopy(model.state_dict())
+    loss_val, accuracy = 9999,0
     model.train(True)
     for epoch in range(n_epochs):  # à chaque epochs
         with tqdm(enumerate(loader_train), desc=f"Epoch {epoch}") as pbar:
