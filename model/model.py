@@ -1,6 +1,23 @@
 import torch.nn as nn
 from torchvision import models
 
+def load_resnext(nb_classes, transfer_learning=False):
+    resnext = models.resnext50_32x4d(pretrained=True)
+    if transfer_learning:
+        # on indique qu'il est inutile de calculer les gradients des paramètres du réseau
+        for param in resnext.parameters():
+            param.requires_grad = False
+    resnext.fc = nn.Linear(resnext.fc.in_features, nb_classes)
+    return resnext
+
+def load_convnext_small(nb_classes, transfer_learning=False):
+    convnext_small = models.convnext_small(pretrained=True)
+    if transfer_learning:
+        # on indique qu'il est inutile de calculer les gradients des paramètres du réseau
+        for param in convnext_small.parameters():
+            param.requires_grad = False
+    convnext_small.classifier[2] = nn.Linear(convnext_small.classifier[2].in_features, nb_classes)
+    return convnext_small
 
 def load_inception(nb_classes, transfer_learning=False):
     inception_v3 = models.inception_v3(pretrained=True)
@@ -46,5 +63,4 @@ def get_params_tranfer_learning(model):
 
 
 if __name__ == '__main__':
-    inception_v3 = load_inception(nb_classes=2)
-    print(inception_v3._get_name())
+    load_convnext_small(nb_classes=6, transfer_learning=True)
