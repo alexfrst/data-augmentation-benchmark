@@ -41,9 +41,9 @@ def train_model(model, loader_train, data_val, optimizer, scheduler, criterion, 
         if accuracy > best_val_score:
             best_val_score = accuracy
             best_params = copy.deepcopy(model.state_dict())
-            torch.save(best_params, 'best_params.pt')
+            torch.save(best_params, f'best_params_{training_name}.pt')
 
     if tb_writer is not None:
         tb_writer.flush()
-    model.load_state_dict(torch.load('best_params.pt'))
+    model.load_state_dict(torch.load(f'best_params_{training_name}.pt'))
     return model, best_val_score
