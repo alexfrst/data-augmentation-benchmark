@@ -4,6 +4,7 @@ import zipfile
 
 import numpy as np
 import torch
+from torch.utils.data import ConcatDataset
 import wget
 from sklearn.model_selection import train_test_split
 from torchvision import datasets, transforms
@@ -56,25 +57,31 @@ def load_dataset(train_image_directory, additional_transforms=(),batch_size=16):
         transforms.Normalize(mean=mean, std=std)
     ])
 
-    test_transforms = transforms.Compose([
-        transforms.Resize([299, 299]),
-        transforms.ToTensor(),
-        transforms.Normalize(mean=mean, std=std)
-    ])
+    if isinstance(additional_transforms, tuple):
+        augmentation = transforms.Compose([
+            *additional_transforms,
+            transforms.Resize([299, 299]),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=mean, std=std)
+        ])
+
+        augmented_dataset = datasets.ImageFolder(train_image_directory, transform=augmentation)
+        augmentation, _ = train_test_split(augmented_dataset.samples, test_size=0.7, stratify=augmented_dataset.targets)
+
+        augmented_dataset.samples = augmentation
+        augmented_dataset.imgs = augmentation
 
     dataset = datasets.ImageFolder(train_image_directory, transform=train_transforms)
 
     train, sample_test = train_test_split(dataset.samples, test_size=0.2, stratify=dataset.targets)
     samples_train, samples_val = train_test_split(train, test_size=0.1, stratify=[element[1] for element in train])
 
-    print("Nombre d'images de train : %i" % len(samples_train))
-    print("Nombre d'images de val : %i" % len(samples_val))
-    print("Nombre d'images de test : %i" % len(sample_test))
-
     # on définit les datasets et loaders pytorch à partir des listes d'images de train / val / test
     dataset_train = datasets.ImageFolder(train_image_directory, train_transforms)
     dataset_train.samples = samples_train
     dataset_train.imgs = samples_train
+    if augmented_dataset is not None:
+        dataset_train = ConcatDataset([dataset_train, augmented_dataset])
 
     dataset_val = datasets.ImageFolder(train_image_directory, train_transforms)
     dataset_val.samples = samples_val
@@ -87,6 +94,10 @@ def load_dataset(train_image_directory, additional_transforms=(),batch_size=16):
     nb_classes_train = check_labels_corectness(samples_train)
     nb_classes_val = check_labels_corectness(samples_val)
     nb_classes_test = check_labels_corectness(dataset_test)
+
+    print("Nombre d'images de train : %i" % len(dataset_train))
+    print("Nombre d'images de val : %i" % len(dataset_val))
+    print("Nombre d'images de test : %i" % len(dataset_test))
 
     loader_train = torch.utils.data.DataLoader(dataset_train, batch_size=batch_size, shuffle=True, num_workers=2)
     loader_val = torch.utils.data.DataLoader(dataset_val, batch_size=batch_size, shuffle=True, num_workers=2)
