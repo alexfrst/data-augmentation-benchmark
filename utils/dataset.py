@@ -66,7 +66,7 @@ def load_dataset(train_image_directory, additional_transforms=(),batch_size=16):
         ])
 
         augmented_dataset = datasets.ImageFolder(train_image_directory, transform=augmentation)
-        augmentation, _ = train_test_split(augmented_dataset.samples, test_size=0.7, stratify=augmented_dataset.targets)
+        augmentation, _ = train_test_split(augmented_dataset.samples, test_size=0.8, stratify=augmented_dataset.targets)
 
         augmented_dataset.samples = augmentation
         augmented_dataset.imgs = augmentation
