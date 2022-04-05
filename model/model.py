@@ -12,10 +12,14 @@ def load_resnext(nb_classes, transfer_learning=False):
 
 def load_convnext_small(nb_classes, transfer_learning=False):
     convnext_small = models.convnext_small(pretrained=True)
-    if transfer_learning:
-        # on indique qu'il est inutile de calculer les gradients des paramètres du réseau
-        for param in convnext_small.parameters():
-            param.requires_grad = False
+
+    for param in convnext_small.parameters():
+        param.requires_grad = False
+
+    if not transfer_learning:
+        for param in list(convnext_small.parameters())[-int(344*0.3):]:
+            param.requires_grad = True
+
     convnext_small.classifier[2] = nn.Linear(convnext_small.classifier[2].in_features, nb_classes)
     return convnext_small
 
@@ -63,4 +67,6 @@ def get_params_tranfer_learning(model):
 
 
 if __name__ == '__main__':
-    load_convnext_small(nb_classes=6, transfer_learning=True)
+    print(len([item for item in load_convnext_small(6).parameters()]))
+    print(len(get_params_tranfer_learning(load_convnext_small(6, transfer_learning=True))))
+    print(len(get_params_tranfer_learning(load_convnext_small(6, transfer_learning=False))))
