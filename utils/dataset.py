@@ -76,15 +76,25 @@ def load_dataset(train_image_directory, additional_transforms=(),batch_size=16):
             transforms.Normalize(mean=mean, std=std)
         ])
 
+        print(f"Building augmented dataset...")
+
         augmented_dataset = datasets.ImageFolder(train_image_directory, augmentation)
         augmented_dataset.samples = samples_train
         augmented_dataset.imgs = samples_train
-        augmentation, _ = train_test_split(augmented_dataset.samples, test_size=0.7, stratify=augmented_dataset.targets)
+
+        augmentation, _ = train_test_split(augmented_dataset.samples, test_size=0.7, stratify=[label for _, label in samples_train])
+
+        print(f"Augmented dataset built {Symbols.OK}")
+
+        print(f"Merging augmented dataset with train set...")
 
         augmented_dataset.samples = augmentation
         augmented_dataset.imgs = augmentation
         if augmented_dataset is not None:
             dataset_train = ConcatDataset([dataset_train, augmented_dataset])
+
+        print(f"Merge complete {Symbols.OK}")
+
 
     dataset_val = datasets.ImageFolder(train_image_directory, train_transforms)
     dataset_val.samples = samples_val
@@ -116,4 +126,4 @@ def load_dataset(train_image_directory, additional_transforms=(),batch_size=16):
 
 if __name__ == '__main__':
     load_zipfile()
-    load_dataset("dataset/dataset-train")
+    load_dataset("dataset/dataset-train", additional_transforms=(transforms.RandomHorizontalFlip(),))
