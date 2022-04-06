@@ -3,10 +3,13 @@ from torchvision import models
 
 def load_resnext(nb_classes, transfer_learning=False):
     resnext = models.resnext50_32x4d(pretrained=True)
-    if transfer_learning:
-        # on indique qu'il est inutile de calculer les gradients des paramètres du réseau
-        for param in resnext.parameters():
-            param.requires_grad = False
+    for param in resnext.parameters():
+        param.requires_grad = False
+
+    if not transfer_learning:
+        for param in list(resnext.parameters())[-int(161*0.3):]:
+            param.requires_grad = True
+
     resnext.fc = nn.Linear(resnext.fc.in_features, nb_classes)
     return resnext
 
@@ -70,3 +73,7 @@ if __name__ == '__main__':
     print(len([item for item in load_convnext_small(6).parameters()]))
     print(len(get_params_tranfer_learning(load_convnext_small(6, transfer_learning=True))))
     print(len(get_params_tranfer_learning(load_convnext_small(6, transfer_learning=False))))
+
+    print(len([item for item in load_resnext(6).parameters()]))
+    print(len(get_params_tranfer_learning(load_resnext(6, transfer_learning=True))))
+    print(len(get_params_tranfer_learning(load_resnext(6, transfer_learning=False))))
