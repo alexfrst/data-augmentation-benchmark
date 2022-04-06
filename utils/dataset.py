@@ -57,19 +57,6 @@ def load_dataset(train_image_directory, additional_transforms=(),batch_size=16):
         transforms.Normalize(mean=mean, std=std)
     ])
 
-    if isinstance(additional_transforms, tuple):
-        augmentation = transforms.Compose([
-            *additional_transforms,
-            transforms.Resize([299, 299]),
-            transforms.ToTensor(),
-            transforms.Normalize(mean=mean, std=std)
-        ])
-
-        augmented_dataset = datasets.ImageFolder(train_image_directory, transform=augmentation)
-        augmentation, _ = train_test_split(augmented_dataset.samples, test_size=0.8, stratify=augmented_dataset.targets)
-
-        augmented_dataset.samples = augmentation
-        augmented_dataset.imgs = augmentation
 
     dataset = datasets.ImageFolder(train_image_directory, transform=train_transforms)
 
@@ -80,8 +67,24 @@ def load_dataset(train_image_directory, additional_transforms=(),batch_size=16):
     dataset_train = datasets.ImageFolder(train_image_directory, train_transforms)
     dataset_train.samples = samples_train
     dataset_train.imgs = samples_train
-    if augmented_dataset is not None:
-        dataset_train = ConcatDataset([dataset_train, augmented_dataset])
+
+    if isinstance(additional_transforms, tuple):
+        augmentation = transforms.Compose([
+            *additional_transforms,
+            transforms.Resize([299, 299]),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=mean, std=std)
+        ])
+
+        augmented_dataset = datasets.ImageFolder(train_image_directory, augmentation)
+        augmented_dataset.samples = samples_train
+        augmented_dataset.imgs = samples_train
+        augmentation, _ = train_test_split(augmented_dataset.samples, test_size=0.7, stratify=augmented_dataset.targets)
+
+        augmented_dataset.samples = augmentation
+        augmented_dataset.imgs = augmentation
+        if augmented_dataset is not None:
+            dataset_train = ConcatDataset([dataset_train, augmented_dataset])
 
     dataset_val = datasets.ImageFolder(train_image_directory, train_transforms)
     dataset_val.samples = samples_val
