@@ -68,7 +68,7 @@ def load_dataset(train_image_directory, additional_transforms=(),batch_size=16):
     dataset_train.samples = samples_train
     dataset_train.imgs = samples_train
 
-    if isinstance(additional_transforms, tuple):
+    if isinstance(additional_transforms, tuple) and len(additional_transforms) > 0:
         augmentation = transforms.Compose([
             *additional_transforms,
             transforms.Resize([299, 299]),
