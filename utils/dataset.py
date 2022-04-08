@@ -83,7 +83,7 @@ def load_dataset(train_image_directory, additional_transforms=(),batch_size=16, 
         augmented_dataset.samples = samples_train
         augmented_dataset.imgs = samples_train
 
-        augmentation, _ = train_test_split(augmented_dataset.samples, test_size=1-augmentation_factor, stratify=[label for _, label in samples_train])
+        augmentation, _ = train_test_split(augmented_dataset.samples, test_size=1.0-augmentation_factor, stratify=[label for _, label in samples_train])
 
         print(f"Augmented dataset built {Symbols.OK}")
 
