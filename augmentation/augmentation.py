@@ -17,7 +17,6 @@ transforms_list = [(transforms.ColorJitter(brightness=0.1, hue=.1), 'ColorJitter
 resnext_best = [
     transforms.RandomRotation(degrees=(0, 180)),
     transforms.RandomResizedCrop(size=(299, 299), scale=(0.8, 0.8)),
-    transforms.RandomAdjustSharpness(sharpness_factor=2.0),
     transforms.RandomAutocontrast(p=0.8),
     transforms.RandomAdjustSharpness(sharpness_factor=2.0),
     transforms.GaussianBlur(kernel_size=(5, 9), sigma=(0.1, 5))]
