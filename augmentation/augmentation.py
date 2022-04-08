@@ -14,16 +14,16 @@ transforms_list = [(transforms.ColorJitter(brightness=0.1, hue=.1), 'ColorJitter
                    (transforms.RandomAutocontrast(p=0.8), 'Contrast-Large'),
                    (transforms.AutoAugment(transforms.AutoAugmentPolicy.IMAGENET), 'AutoAugment-Imagenet')]
 
-resnext_best = transforms.Compose([
+resnext_best = [
     transforms.RandomRotation(degrees=(0, 180)),
     transforms.RandomResizedCrop(size=(299, 299), scale=(0.8, 0.8)),
     transforms.RandomAdjustSharpness(sharpness_factor=2.0),
     transforms.RandomAutocontrast(p=0.8),
     transforms.RandomAdjustSharpness(sharpness_factor=2.0),
-    transforms.GaussianBlur(kernel_size=(5, 9), sigma=(0.1, 5))])
+    transforms.GaussianBlur(kernel_size=(5, 9), sigma=(0.1, 5))]
 
-convnext_best = transforms.Compose([transforms.ColorJitter(brightness=0.1, hue=.1),
-                                    transforms.RandomResizedCrop(size=(299, 299), scale=(0.45, 0.45)),
-                                    transforms.RandomAutocontrast(p=0.8),
-                                    transforms.RandomAdjustSharpness(sharpness_factor=2.0),
-                                    transforms.GaussianBlur(kernel_size=(5, 9), sigma=(5, 10))])
+convnext_best = [transforms.ColorJitter(brightness=0.1, hue=.1),
+                 transforms.RandomResizedCrop(size=(299, 299), scale=(0.45, 0.45)),
+                 transforms.RandomAutocontrast(p=0.8),
+                 transforms.RandomAdjustSharpness(sharpness_factor=2.0),
+                 transforms.GaussianBlur(kernel_size=(5, 9), sigma=(5, 10))]
