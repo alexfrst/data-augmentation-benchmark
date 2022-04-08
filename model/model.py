@@ -7,7 +7,7 @@ def load_resnext(nb_classes, transfer_learning=False):
         param.requires_grad = False
 
     if not transfer_learning:
-        for param in list(resnext.parameters())[-int(161*0.3):]:
+        for param in list(resnext.parameters())[-int(161*0.4):]:
             param.requires_grad = True
 
     resnext.fc = nn.Linear(resnext.fc.in_features, nb_classes)
@@ -20,7 +20,7 @@ def load_convnext_small(nb_classes, transfer_learning=False):
         param.requires_grad = False
 
     if not transfer_learning:
-        for param in list(convnext_small.parameters())[-int(344*0.15):]:
+        for param in list(convnext_small.parameters())[-int(344*0.4):]:
             param.requires_grad = True
 
     convnext_small.classifier[2] = nn.Linear(convnext_small.classifier[2].in_features, nb_classes)
