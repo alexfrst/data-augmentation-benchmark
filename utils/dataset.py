@@ -3,6 +3,7 @@ import sys
 import zipfile
 
 import numpy as np
+import pandas as pd
 import torch
 from torch.utils.data import ConcatDataset
 import wget
@@ -45,7 +46,7 @@ def check_labels_corectness(dataset):
     return nb_classes
 
 
-def load_dataset(train_image_directory, additional_transforms=(),batch_size=16):
+def load_dataset(train_image_directory, additional_transforms=(),batch_size=16, augmentation_factor=1.0):
     print("Loading dataset...")
 
     mean = np.array([0.485, 0.456, 0.406])
@@ -82,7 +83,7 @@ def load_dataset(train_image_directory, additional_transforms=(),batch_size=16):
         augmented_dataset.samples = samples_train
         augmented_dataset.imgs = samples_train
 
-        augmentation, _ = train_test_split(augmented_dataset.samples, test_size=0.7, stratify=[label for _, label in samples_train])
+        augmentation, _ = train_test_split(augmented_dataset.samples, test_size=1-augmentation_factor, stratify=[label for _, label in samples_train])
 
         print(f"Augmented dataset built {Symbols.OK}")
 
@@ -127,3 +128,6 @@ def load_dataset(train_image_directory, additional_transforms=(),batch_size=16):
 if __name__ == '__main__':
     load_zipfile()
     load_dataset("dataset/dataset-train", additional_transforms=(transforms.RandomHorizontalFlip(),))
+    dataset = datasets.ImageFolder("dataset/dataset-train")
+    print(pd.Series([path.split("\\")[1] for path, _class in dataset.samples]).value_counts())
+
