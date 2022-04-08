@@ -13,6 +13,7 @@ from torchvision import datasets, transforms
 sys.path.append('.')
 import config
 from utils.print_utils import Symbols
+from augmentation.augmentation import convnext_best
 
 
 # Load or download zipfile
@@ -68,6 +69,8 @@ def load_dataset(train_image_directory, additional_transforms=(),batch_size=16, 
     dataset_train = datasets.ImageFolder(train_image_directory, train_transforms)
     dataset_train.samples = samples_train
     dataset_train.imgs = samples_train
+
+    print(type(additional_transforms))
 
     if (isinstance(additional_transforms, tuple) or isinstance(additional_transforms, list)) and len(additional_transforms) > 0:
         augmentation = transforms.Compose([
@@ -127,7 +130,7 @@ def load_dataset(train_image_directory, additional_transforms=(),batch_size=16, 
 
 if __name__ == '__main__':
     load_zipfile()
-    load_dataset("dataset/dataset-train", additional_transforms=(transforms.RandomHorizontalFlip(),))
+    load_dataset("dataset/dataset-train", additional_transforms=convnext_best, augmentation_factor=0.8)
     dataset = datasets.ImageFolder("dataset/dataset-train")
     print(pd.Series([path.split("\\")[1] for path, _class in dataset.samples]).value_counts())
 
