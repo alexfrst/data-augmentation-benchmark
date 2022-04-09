@@ -26,4 +26,5 @@ convnext_best = [transforms.ColorJitter(brightness=0.1, hue=.1),
                  transforms.RandomAutocontrast(p=0.8),
                  transforms.RandomAdjustSharpness(sharpness_factor=2.0),
                  transforms.RandomResizedCrop(size=(299, 299), scale=(0.45, 0.45)),
-                 transforms.GaussianBlur(kernel_size=(5, 9), sigma=(5, 10))]
+                 transforms.GaussianBlur(kernel_size=(5, 9), sigma=(5, 10)),
+                 transforms.RandomRotation(degrees=(0, 10))]
