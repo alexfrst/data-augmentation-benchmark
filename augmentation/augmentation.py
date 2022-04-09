@@ -2,8 +2,8 @@ from torchvision import transforms
 
 transforms_list = [(transforms.ColorJitter(brightness=0.1, hue=.1), 'ColorJitter-Small'),
                    (transforms.ColorJitter(brightness=.5, hue=.2), 'ColorJitter-Medium'),
-                   (transforms.GaussianBlur(kernel_size=(5, 9), sigma=(0.1, 5)), 'GaussianBlur-Small'),
-                   (transforms.GaussianBlur(kernel_size=(5, 9), sigma=(5, 10)), 'GaussianBlur-Medium'),
+                   (transforms.GaussianBlur(kernel_size=(5, 9), sigma=(0.1, 5)), 'Gaussian-BlurSmall'),
+                   (transforms.GaussianBlur(kernel_size=(5, 9), sigma=(5, 10)), 'Gaussian-BlurMedium'),
                    (transforms.RandomRotation(degrees=(0, 10)), 'Rotation-Small'),
                    (transforms.RandomRotation(degrees=(0, 180)), 'Rotation-Large'),
                    (transforms.RandomResizedCrop(size=(299, 299), scale=(0.8, 0.8)), 'Crop-Small'),
