@@ -1,19 +1,20 @@
+import math
 import os
 import sys
 import zipfile
 
 import numpy as np
 import pandas as pd
+import plotly.express as px
 import torch
-from torch.utils.data import ConcatDataset
 import wget
 from sklearn.model_selection import train_test_split
+from torch.utils.data import ConcatDataset
 from torchvision import datasets, transforms
 
 sys.path.append('.')
 import config
 from utils.print_utils import Symbols
-from augmentation.augmentation import convnext_best
 
 
 # Load or download zipfile
@@ -47,7 +48,7 @@ def check_labels_corectness(dataset):
     return nb_classes
 
 
-def load_dataset(train_image_directory, additional_transforms=(),batch_size=16, augmentation_factor=1.0):
+def load_dataset(train_image_directory, additional_transforms=(), batch_size=16, augmentation_factor=1.0):
     print("Loading dataset...")
 
     mean = np.array([0.485, 0.456, 0.406])
@@ -58,7 +59,6 @@ def load_dataset(train_image_directory, additional_transforms=(),batch_size=16, 
         transforms.ToTensor(),
         transforms.Normalize(mean=mean, std=std)
     ])
-
 
     dataset = datasets.ImageFolder(train_image_directory, transform=train_transforms)
 
@@ -72,7 +72,8 @@ def load_dataset(train_image_directory, additional_transforms=(),batch_size=16, 
 
     print(type(additional_transforms))
 
-    if (isinstance(additional_transforms, tuple) or isinstance(additional_transforms, list)) and len(additional_transforms) > 0:
+    if (isinstance(additional_transforms, tuple) or isinstance(additional_transforms, list)) and len(
+            additional_transforms) > 0:
         augmentation = transforms.Compose([
             *additional_transforms,
             transforms.Resize([299, 299]),
@@ -86,7 +87,8 @@ def load_dataset(train_image_directory, additional_transforms=(),batch_size=16, 
         augmented_dataset.samples = samples_train
         augmented_dataset.imgs = samples_train
 
-        augmentation, _ = train_test_split(augmented_dataset.samples, test_size=1.0-augmentation_factor, stratify=[label for _, label in samples_train])
+        augmentation, _ = train_test_split(augmented_dataset.samples, test_size=1.0 - augmentation_factor,
+                                           stratify=[label for _, label in samples_train])
 
         print(f"Augmented dataset built {Symbols.OK}")
 
@@ -98,7 +100,6 @@ def load_dataset(train_image_directory, additional_transforms=(),batch_size=16, 
             dataset_train = ConcatDataset([dataset_train, augmented_dataset])
 
         print(f"Merge complete {Symbols.OK}")
-
 
     dataset_val = datasets.ImageFolder(train_image_directory, train_transforms)
     dataset_val.samples = samples_val
@@ -132,5 +133,19 @@ if __name__ == '__main__':
     load_zipfile()
     load_dataset("dataset/dataset-train", additional_transforms=convnext_best, augmentation_factor=0.8)
     dataset = datasets.ImageFolder("dataset/dataset-train")
-    print(pd.Series([path.split("\\")[1] for path, _class in dataset.samples]).value_counts())
+    classes_count = pd.Series([path.split("\\")[1] for path, _class in dataset.samples]).value_counts()
+    relative_cumulative_frequency = classes_count.cumsum() / classes_count.sum()
+    relative_frequency = classes_count / classes_count.sum()
+    vline = relative_cumulative_frequency.index.get_loc(
+        relative_cumulative_frequency[relative_cumulative_frequency > 0.92].idxmin())
 
+    fig = px.bar(relative_frequency, labels={"index": "Species"})
+    fig.add_vline(x=math.ceil(vline), line_width=3, line_dash="dash", line_color="red", annotation_text="Best accuracy (91%)")
+    fig.update_layout(showlegend=False, yaxis_title=None, xaxis_title=None, margin=dict(
+        l=10,  # left
+        r=10,  # right
+        t=50,  # top
+        b=10,  # bottom
+    ))
+    fig.update_annotations(textangle=90)
+    fig.write_image("figures/class_repartition.png", scale=4)
