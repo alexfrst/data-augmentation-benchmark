@@ -3,6 +3,8 @@ import os
 import sys
 import zipfile
 
+import PIL
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import plotly.express as px
@@ -70,8 +72,6 @@ def load_dataset(train_image_directory, additional_transforms=(), batch_size=16,
     dataset_train.samples = samples_train
     dataset_train.imgs = samples_train
 
-    print(type(additional_transforms))
-
     if (isinstance(additional_transforms, tuple) or isinstance(additional_transforms, list)) and len(
             additional_transforms) > 0:
         augmentation = transforms.Compose([
@@ -131,7 +131,7 @@ def load_dataset(train_image_directory, additional_transforms=(), batch_size=16,
 
 if __name__ == '__main__':
     load_zipfile()
-    load_dataset("dataset/dataset-train", additional_transforms=convnext_best, augmentation_factor=0.8)
+    load_dataset("dataset/dataset-train")
     dataset = datasets.ImageFolder("dataset/dataset-train")
     classes_count = pd.Series([path.split("\\")[1] for path, _class in dataset.samples]).value_counts()
     relative_cumulative_frequency = classes_count.cumsum() / classes_count.sum()
@@ -139,13 +139,31 @@ if __name__ == '__main__':
     vline = relative_cumulative_frequency.index.get_loc(
         relative_cumulative_frequency[relative_cumulative_frequency > 0.92].idxmin())
 
-    fig = px.bar(relative_frequency, labels={"index": "Species"})
-    fig.add_vline(x=math.ceil(vline), line_width=3, line_dash="dash", line_color="red", annotation_text="Best accuracy (91%)")
+    fig = px.bar(relative_frequency, labels={"index": "Species"}, template="plotly_white", width=400, height=300)
+    fig.add_vline(x=math.ceil(vline), line_width=3, line_dash="dash", line_color="red",
+                  annotation_text="Best accuracy (91%)")
     fig.update_layout(showlegend=False, yaxis_title=None, xaxis_title=None, margin=dict(
-        l=10,  # left
-        r=10,  # right
-        t=50,  # top
-        b=10,  # bottom
+        l=0,  # left
+        r=0,  # right
+        t=0,  # top
+        b=0,  # bottom
     ))
     fig.update_annotations(textangle=90)
     fig.write_image("figures/class_repartition.png", scale=4)
+
+    paths = list({classe_id: path for path, classe_id in dataset.samples}.values())[:36]
+
+    w = 6
+    h = 6
+
+    load_img = lambda filename: np.array(PIL.Image.open(filename).resize((200, 200)))
+
+    _, axes_list = plt.subplots(h, w, figsize=(2 * w, 2 * h))  # define a grid of (w, h)
+    index = 0
+    for axes in axes_list:
+        for ax in axes:
+            ax.axis('off')
+            ax.imshow(load_img(paths[index]))  # load and show
+            ax.set_title(paths[index].split('\\')[1],y=-0.19)
+            index += 1
+    plt.savefig("figures/mosaic.png", dpi=400, bbox_inches='tight')
