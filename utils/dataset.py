@@ -151,10 +151,10 @@ if __name__ == '__main__':
     fig.update_annotations(textangle=90)
     fig.write_image("figures/class_repartition.png", scale=4)
 
-    paths = list({classe_id: path for path, classe_id in dataset.samples}.values())[:36]
+    paths = list({classe_id: path for path, classe_id in dataset.samples}.values())[:60]
 
     w = 6
-    h = 6
+    h = 10
 
     load_img = lambda filename: np.array(PIL.Image.open(filename).resize((200, 200)))
 
